@@ -9,11 +9,12 @@ setup(name='coinop',
       license='MIT',
       packages=find_packages(exclude=[
           u'*.tests', u'*.tests.*', u'tests.*', u'tests']),
+      # PyNaCl not listed as a dependency to ensure you install it
+      # manually.
       install_requires=[
           'cffi',
           'pytest',
           'pycrypto',
-          'pynacl',
           'python-bitcoinlib',
           'pycoin',
           'PyYAML',

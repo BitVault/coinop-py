@@ -13,16 +13,20 @@ Installing coinop-py:
    at least the 2.7 and perhaps the 2.6 series. If those versions don't fit
    your needs drop us a line and we can talk about it.
 
-2. Install a C build environment if you don't already have one: you'll need gcc
+2. Install pip (Ubuntu: python-pip)
+
+3. Install a C build environment if you don't already have one: you'll need gcc
    (Debian/Ubuntu: gcc) and make (make)
 
-3. Install the python C extension libraries: libpython (libpython-all-dev),
+4. Install the python C extension libraries: libpython (libpython-all-dev),
    libffi (libffi-dev)
 
-4. Make sure you've installed pip (Ubuntu: python-pip), or at least setuptools
-   (python-setuptools) if you only plan to work from the git repository.
+5. Install PyNaCl by hand, as it does not seem to install properly as a
+   dependency:
 
-5. Either: install coinop from PyPI:
+    $ pip install PyNaCl
+
+5. Install coinop with the rest of its dependencies:
 
     $ pip install coinop
 
