@@ -4,4 +4,4 @@ RUN pacman -S --noconfirm python2
 ADD . ./coinop
 ADD . ./coinop.egg-info
 ADD . ./setup.py
-RUN [ "/usr/bin/python2", "setup.py", "develop"]
+RUN [ "/usr/bin/python2", "setup.py", "developer"]
