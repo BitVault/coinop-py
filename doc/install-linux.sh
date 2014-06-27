@@ -14,7 +14,7 @@ APT=/usr/bin/apt-get
 
 
 # Install a build environment for C extensions
-$APT install gcc make libpython-all-dev libffi-dev pip
+$APT install gcc make libpython-all-dev libffi-dev python-pip
 
 # Insttall PyNaCl manually, as on some systems it will not install properly
 # as a dependency:
