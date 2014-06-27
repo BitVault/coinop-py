@@ -25,6 +25,6 @@ Linux:
 
     $ sudo ./doc/install-linux.sh
 
-from the root directory (no sudo needed if you're using a tool like pyenv).
-Otherwise, read the script and run the relevant commands yourself when you're
-convinced they'll do no harm.
+from the root directory (no sudo needed if you're using a tool like pyenv) to
+install system-level dependencies automatically. Otherwise, read the script and
+run the relevant commands yourself when you're convinced they'll do no harm.

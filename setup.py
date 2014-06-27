@@ -1,6 +1,19 @@
 from setuptools import setup, find_packages
+from setuptools.command.install import install
+import os
+
+
+class MyCommand(install):
+    """Run PyNaCl install manually as it doesn't work automatically
+    on many machines."""
+
+    def run(self):
+        os.system("pip install PyNaCl")
+        install.run(self)
+
 
 setup(name='coinop',
+      cmdclass={'install': MyCommand},
       version='0.0.1',
       description='Crypto-currency conveniences',
       url='http://github.com/BitVault/coinop-py',
@@ -9,8 +22,8 @@ setup(name='coinop',
       license='MIT',
       packages=find_packages(exclude=[
           u'*.tests', u'*.tests.*', u'tests.*', u'tests']),
-      # PyNaCl not listed as a dependency to ensure you install it
-      # manually.
+      # PyNaCl not listed as a dependency to ensure it gets installed
+      # separately.
       install_requires=[
           'cffi',
           'pytest',
