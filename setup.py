@@ -7,12 +7,14 @@ setup(name='coinop',
       author='Matthew King',
       author_email='matthew@bitvault.io',
       license='MIT',
-      packages=find_packages(),
+      packages=find_packages(exclude=[
+          u'*.tests', u'*.tests.*', u'tests.*', u'tests']),
+      # PyNaCl not listed as a dependency to ensure you install it
+      # manually.
       install_requires=[
           'cffi',
           'pytest',
           'pycrypto',
-          'pynacl',
           'python-bitcoinlib',
           'pycoin',
           'PyYAML',
