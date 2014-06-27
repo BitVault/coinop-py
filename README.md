@@ -7,29 +7,24 @@ patches welcome.
 
 Installing coinop-py:
 
-1. Install a python 2.7 environment (the nicest way to do this is with pyenv
-   and virtualenv).  It is developed under 2.7.7, and while it may work with
-   earlier versions that is currently untested. The goal is compatibility with
-   at least the 2.7 and perhaps the 2.6 series. If those versions don't fit
-   your needs drop us a line and we can talk about it.
+Linux:
 
-2. Install pip (Ubuntu: python-pip)
+1. Install a python 2.7 environment (your distro probably does this as part of
+   the base system, but the nicer way is with pyenv and virtualenv).  It is
+   developed under 2.7.7, and while it may work with earlier versions that is
+   currently untested. The longer-term goal is compatibility with at least the
+   2.7 and perhaps the 2.6 series. If those versions don't fit your needs drop
+   us a line and we can talk about it.
 
-3. Install a C build environment if you don't already have one: you'll need gcc
-   (Debian/Ubuntu: gcc) and make (make)
+2. Clone the git repository:
 
-4. Install the python C extension libraries: libpython (libpython-all-dev),
-   libffi (libffi-dev)
+    $ git clone https://github.com/BitVault/coinop-py.git
+    $ cd coinop-py
 
-5. Install PyNaCl by hand, as it does not seem to install properly as a
-   dependency:
+2. If you like to live dangerously, you can simply run
 
-    $ pip install PyNaCl
+    $ sudo ./doc/install-linux.sh
 
-5. Install coinop with the rest of its dependencies:
-
-    $ pip install coinop
-
-   Or: install from the github repo (https://github.com/BitVault/coinop-py) and
-   run 'python setup.py install' ('python setup.py develop' if you plan to work
-   on the codebase yourself).
+from the root directory (no sudo needed if you're using a tool like pyenv).
+Otherwise, read the script and run the relevant commands yourself when you're
+convinced they'll do no harm.
