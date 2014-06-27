@@ -7,24 +7,30 @@ patches welcome.
 
 Installing coinop-py:
 
-Linux:
+Ubuntu:
 
-1. Install a python 2.7 environment (your distro probably does this as part of
-   the base system, but the nicer way is with pyenv and virtualenv).  It is
-   developed under 2.7.7, and while it may work with earlier versions that is
-   currently untested. The longer-term goal is compatibility with at least the
-   2.7 and perhaps the 2.6 series. If those versions don't fit your needs drop
-   us a line and we can talk about it.
+Prerequisites:
 
-2. Clone the git repository:
+1. A python 2.7 environment (your distro probably does this as part of the base
+   system, but the nicer way is with pyenv and/or virtualenv). coinop-py is
+   currently developed under 2.7.7.
+
+2. A python extension build environment. You probably have most or all of this
+   on your machine already, but the following should do it on a bare system:
+
+   $ sudo apt-get install gcc make libpython-all-dev libffi-dev python-pip
+
+Installing:
+
+Either install from PyPI:
+
+    $ sudo pip install coinop
+
+or clone the git repository and run setup.py:
 
     $ git clone https://github.com/BitVault/coinop-py.git
     $ cd coinop-py
+    $ sudo python setup.py install
 
-2. If you like to live dangerously, you can simply run
-
-    $ sudo ./doc/install-linux.sh
-
-from the root directory (no sudo needed if you're using a tool like pyenv) to
-install system-level dependencies automatically. Otherwise, read the script and
-run the relevant commands yourself when you're convinced they'll do no harm.
+(if you're using a virtual environment, you obviously don't need sudo in
+either case)
