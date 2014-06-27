@@ -14,7 +14,7 @@ class MyCommand(install):
 
 setup(name='coinop',
       cmdclass={'install': MyCommand},
-      version='0.0.1',
+      version='0.0.2',
       description='Crypto-currency conveniences',
       url='http://github.com/BitVault/coinop-py',
       author='Matthew King',
