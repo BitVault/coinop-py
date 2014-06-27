@@ -1,6 +1,5 @@
 FROM ubuntu
 RUN apt-get -y install gcc make libpython-all-dev libffi-dev python-pip
-RUN pip install PyNaCl
 RUN mkdir coinop-py
 ADD ./coinop ./coinop-py/coinop
 ADD ./coinop.egg-info ./coinop-py/coinop.egg-info
