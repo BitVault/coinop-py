@@ -26,6 +26,9 @@ Installing:
 
     $ pip install PyNaCl
 
+(if you're not using a virtual environment, you obviously need to run pip
+with sudo)
+
 2. Install coinop from PyPI:
 
     $ pip install coinop
