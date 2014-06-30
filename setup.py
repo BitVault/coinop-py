@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='coinop',
-      version='0.0.3',
+      version='0.1.0',
       description='Crypto-currency conveniences',
       url='http://github.com/BitVault/coinop-py',
       author='Matthew King',
