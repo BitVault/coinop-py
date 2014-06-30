@@ -22,15 +22,13 @@ Prerequisites:
 
 Installing:
 
-Either install from PyPI:
+1. *Manually* install PyNaCl to work around an install bug on some machines:
 
-    $ sudo pip install coinop
+    $ pip install PyNaCl
 
-or clone the git repository and run setup.py:
+2. Install coinop from PyPI:
 
-    $ git clone https://github.com/BitVault/coinop-py.git
-    $ cd coinop-py
-    $ sudo python setup.py install
+    $ pip install coinop
 
-(if you're using a virtual environment, you obviously don't need sudo in
-either case)
+(if you're not using a virtual environment, you obviously need to run pip
+with sudo)
