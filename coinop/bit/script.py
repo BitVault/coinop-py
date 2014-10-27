@@ -157,6 +157,10 @@ class Script:
         cscript = self.cscript.to_p2sh_scriptPubKey()
         return Script(cscript=cscript)
 
+    # Returns the P2SH address for this script.  This presumes that the
+    # script is one suitable for defining the authorization of an input.
+    # E.g. it could be a multi-sig script that contains the M value and
+    # the set of public keys to be used (but not any signatures)
     def p2sh_address(self, network="testnet"):
         return encode_address(self.hash160(), network)
 

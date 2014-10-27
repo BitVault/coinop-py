@@ -37,7 +37,13 @@ class MultiWallet(object):
         return cls(private=seeds)
 
 
+    # The private and public arguments are dicts that contain HDW seed
+    # strings, keyed by name.
     def __init__(self, private={}, public={}):
+        # It is possible to distinguish between private and public seeds
+        # based on the string content.  Consider modifying this function
+        # to take merely one dict of seeds.  Trees should still be stored
+        # separately.
         self.trees = {}
         self.private_trees = {}
         self.public_trees = {}
@@ -105,13 +111,20 @@ class MultiWallet(object):
         node = self.path(path)
         # TODO: use python equiv of ruby to_s
         # apparently the global str() ?
+        # FIXME: node.p2sh_script should be taking an M argument indicating
+        # how many signatures are required to authorize.
         ours = node.p2sh_script().to_string()
         theirs = output.script.to_string()
         return ours == theirs
 
+    # Returns a list of signature dicts, corresponding to the inputs
+    # for the supplied transaction.
     def signatures(self, transaction):
         return map(self.sign_input, transaction.inputs)
 
+    # Given an Input (the output of which must contain a wallet_path in
+    # its metadata) return a dictionary of signatures.  The dict keys
+    # are the names of the private trees.
     def sign_input(self, input):
         path = input.output.metadata['wallet_path']
         node = self.path(path)
@@ -119,6 +132,8 @@ class MultiWallet(object):
         return node.signatures(sig_hash)
 
 
+# Manages any number of BIP 32 nodes (private and/or public) derived from
+# a given path.
 class MultiNode:
 
     def __init__(self, path, private={}, public={}):
@@ -147,29 +162,38 @@ class MultiNode:
 
         return Script(public_keys=keys, needed=m)
 
+    # Returns the P2SH address for a m-of-n multisig script using the
+    # public keys derived for this node.
     def address(self):
+        # FIXME: Should take the M argument and pass into self.script()
+        # Otherwise, this is always a 2-of-n script address.
         return self.script().p2sh_address()
 
 
+    # Returns the P2SH script to be used as the scriptPubkey for an Output.
     def p2sh_script(self):
+        # FIXME: take an M argument to pass to self.address()
         return Script(p2sh_address=self.address())
 
+    # Returns a dict of signatures, keyed by the tree names.
     def signatures(self, value):
         names = sorted(self.private_keys.keys())
-        #return dict((name, self.sign(name, value)) for name in names)
         s = ((name, base58.encode(self.sign(name, value))) for name in names)
         return dict(s)
 
     def sign(self, name, value):
         try:
             key = self.private_keys[name]
-            # \x01 means the hash type is SIGHASH_ALL
+            # Append a "hashtype" byte to the signature.
+            # \x01 means the hash type is SIGHASH_ALL.  Other hashtypes are not
+            # often used.
             # https://en.bitcoin.it/wiki/OP_CHECKSIG#Hashtype_SIGHASH_ALL_.28default.29
             return key.sign(value) + b'\x01'
         except KeyError:
             raise Exception("No such key: '{0}'".format(name))
 
 
+    # Generate the script_sig for a set of signatures.
     def script_sig(self, signatures):
         self.script.p2sh_sig(signatures=signatures)
 
