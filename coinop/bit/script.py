@@ -10,6 +10,7 @@ from bitcoin.core import b2x, Hash160
 from bitcoin.base58 import encode, decode
 
 def encode_address(data, network):
+    # TODO: true multi-network support
     if network == "mainnet":
         version = 5
     elif network == "testnet":
@@ -22,8 +23,12 @@ def encode_address(data, network):
     return encode(data + check)
             
 
-# adapted from python-bitcoinlib's tests
+# Given a script in human-readable "asm" form, returns the script as a
+# byte string.
+# Adapted from python-bitcoinlib's tests
 def from_string(string):
+
+    # TODO: this should probably go in a util package.
     def ishex(s):
         return set(s).issubset(set('0123456789abcdefABCDEF'))
 
@@ -63,7 +68,10 @@ def multisig(**options):
     return CScript([m] + keys + [3, OP_CHECKMULTISIG])
 
 
-# adapted from python-bitcoinlib
+# Given a byte string representing a script, returns the human readable
+# "asm" format.
+# Adapted from python-bitcoinlib's bitcoin.core.script.CScript.__repr__,
+# which returns a string with the class name prefixed.
 def cscript_to_string(cscript):
     def to_s(o):
         if isinstance(o, bytes):
@@ -92,8 +100,18 @@ def cscript_to_string(cscript):
 
 
 
+# A wrapper class to make it easier to work with CScript
 class Script:
 
+    # Valid keywords:
+    #
+    # * cscript - An actual CScript instance
+    # * string - The "asm", human-readable form of a Bitcoin script
+    # * binary - Byte string representation of a script
+    # * hex - Hex representation of a script
+    # * p2sh_address - A pay-to-script-hash address
+    # * public_keys, needed - the public keys for a multisig script and
+    #   the number of signatures needed for valid authorization.
     def __init__(self, **options):
         if 'cscript' in options:
             self.set_cscript(options['cscript'])
@@ -107,6 +125,8 @@ class Script:
         else:
             if 'p2sh_address' in options:
                 self.set_cscript(from_p2sh_address(options['p2sh_address']))
+            # TODO: add a branch for handling 'address', which should be able
+            # to work with either P2SH or regular addresses
             elif ('public_keys' in options) and ('needed' in options):
                 self.set_cscript(multisig(**options))
             #elif 'signatures' in options:
@@ -127,6 +147,7 @@ class Script:
         return hexlify(self.cscript)
 
     def to_binary(self):
+        # FIXME:  actually implement this.
         pass
 
     def hash160(self):

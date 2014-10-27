@@ -8,8 +8,20 @@ from .keys import PrivateKey, PublicKey
 
 import bitcoin.base58 as base58
 
+# A MultiWallet maintains any number of BIP 32 HDW trees, treating them
+# as parallel structures.  Given a path, the MultiWallet can produce
+# a MultiNode containing the appropriate nodes for each tree.  These
+# nodes can be used in multi-sig applications.
+
+# The HDW trees need not be private; in many applications, you specifically
+# need to use some public trees and some private trees.
+
+# MultiWallet trees are named, allowing them to be distinguished easily.
+
 class MultiWallet(object):
 
+    # Given a list of tree names, create a MultiWallet containing private
+    # trees.
     @classmethod
     def generate(cls, names, network="testnet"):
         seeds = {}
@@ -71,6 +83,7 @@ class MultiWallet(object):
         return out
         
 
+    # Given a wallet path, returns a MultiNode for that path.
     def path(self, path):
         _path = path[2:]
         options = { 'private': {}, 'public': {} }
@@ -82,7 +95,12 @@ class MultiWallet(object):
 
         return MultiNode(path, **options)
 
+    # Determines whether the script included in an Output was generated
+    # from this wallet.
     def is_valid_output(self, output):
+        # TODO: better error handling in case no wallet_path is found.
+        # May also be better to take the wallet_path as an argument to
+        # the function.
         path = output.metadata['wallet_path']
         node = self.path(path)
         # TODO: use python equiv of ruby to_s

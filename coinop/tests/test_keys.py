@@ -42,6 +42,7 @@ def test_key_stuff():
     priv = PrivateKey.from_secret(node.secret_exponent_bytes)
     pub = priv.public_key()
 
+    # FIXME:  Assertions would be pleasant.
     py_sig = priv.sign(digest)
     pub.verify(digest, py_sig)
 
