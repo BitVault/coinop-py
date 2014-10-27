@@ -7,13 +7,19 @@ from ecdsa.util import string_to_number, number_to_string, randrange
 from ecdsa.ellipticcurve import Point
 
 
+# Wrappers around the ecdsa classes.  Primary purpose is to provide a
+# clean interface for using pycoin's bip32 HDWs.
+
 class PrivateKey(object):
 
     @classmethod
     def from_secret(cls, secret):
+        # TODO: consider renaming to from_string, for parallelism with
+        # PublicKey's class method of that name.
         key = SigningKey.from_string(secret, curve=SECP256k1)
         return cls(key)
 
+    # ECDSA private keys can be derived from a single integer, the exponent.
     @classmethod
     def from_exponent(cls, exponent):
         key = SigningKey.from_secret_exponent(exponent, curve=SECP256k1)
@@ -38,6 +44,7 @@ class PublicKey(object):
     def from_string(cls, string):
         return cls(VerifyingKey.from_string(string, curve=SECP256k1))
 
+    # Create a PublicKey from an x,y pair.
     @classmethod
     def from_pair(cls, pair):
         x, y = pair

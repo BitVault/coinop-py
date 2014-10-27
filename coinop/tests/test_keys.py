@@ -28,7 +28,9 @@ def test_key_stuff():
     path = data['paths']['m/0/0/0']
 
     digest = unhexlify(path['digest'])
-    # the last byte is added for some bitcoin reason. TODO: document
+    # The last byte of a signature is the "hashtype", metadata that determines
+    # which inputs and outputs of a transaction must be verified.
+    # This byte is not relevant to ECDSA signature verification.
     rb_sig = unhexlify(path['primary_signature'])[:-1]
 
     wallet = bip32.Wallet.from_wallet_key(seed)
@@ -42,6 +44,7 @@ def test_key_stuff():
     priv = PrivateKey.from_secret(node.secret_exponent_bytes)
     pub = priv.public_key()
 
+    # FIXME:  Assertions would be pleasant.
     py_sig = priv.sign(digest)
     pub.verify(digest, py_sig)
 
