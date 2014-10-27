@@ -80,14 +80,12 @@ class MultiWallet(object):
         for name, tree in self.private_trees.iteritems():
             out[name] = self.private_seed(name)
         return out
-        
 
     def public_seeds(self):
         out = {}
         for name, tree in self.public_trees.iteritems():
             out[name] = self.public_seed(name)
         return out
-        
 
     # Given a wallet path, returns a MultiNode for that path.
     def path(self, path):

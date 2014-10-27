@@ -18,7 +18,7 @@ setup(name='coinop',
           'pytest',
           'pycrypto',
           'python-bitcoinlib',
-          'pycoin',
+          'pycoin==0.42',
           'PyYAML',
           'ecdsa'
       ],
