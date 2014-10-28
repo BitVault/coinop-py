@@ -28,7 +28,10 @@ class MultiWallet(object):
         def create_node(name):
             secret = random(32)
             # FIXME: set blockchain/network correctly
-            tree = bip32.Wallet.from_master_secret(secret, netcode='XTN')
+            if network in ["bitcoin", "mainnet"]:
+                tree = bip32.Wallet.from_master_secret(secret, netcode='BTC')
+            else:
+                tree = bip32.Wallet.from_master_secret(secret, netcode='XTN')
             return tree
 
         for name in names:
