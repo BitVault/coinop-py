@@ -61,12 +61,3 @@ def test_key_stuff():
     pub_from_pair = PublicKey.from_pair(node.public_pair)
 
     pub_from_pair.verify(digest, rb_sig)
-
-
-
-
-
-
-
-    
-
