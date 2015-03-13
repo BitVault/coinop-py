@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='coinop',
-      version='0.1.0',
+      version='0.1.1',
       description='Crypto-currency conveniences',
       url='http://github.com/GemHQ/coinop-py',
       author='Matt Smith',
