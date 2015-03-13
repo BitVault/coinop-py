@@ -20,6 +20,11 @@ import bitcoin.base58 as base58
 
 class MultiWallet(object):
 
+    @classmethod
+    def network_code(cls, name):
+        return u'BTC' if name in [u'bitcoin', u'mainnet'] else u'XTN'
+
+
     # Given a list of tree names, create a MultiWallet containing private
     # trees.
     # If `entropy` is true, return a 2-tuple of a dict of name:secret pairs and
@@ -28,9 +33,9 @@ class MultiWallet(object):
     def generate(cls, names, entropy=False, network=u'testnet'):
         def create_node(name):
             secret = random(32)
-            netcode = u'BTC' if network in [u'bitcoin', u'mainnet'] else u'XTN'
 
-            tree = bip32.Wallet.from_master_secret(secret, netcode)
+            tree = bip32.Wallet.from_master_secret(secret,
+                                                   cls.network_code(network))
             return (secret, tree)
 
         seeds = {}
@@ -49,7 +54,9 @@ class MultiWallet(object):
 
     # The private and public arguments are dicts that contain HDW seed
     # strings, keyed by name.
-    def __init__(self, private={}, public={}, network=u'testnet'):
+    # private_seeds is a dict of the same form but containing raw entropy
+    # instead of a node
+    def __init__(self, private={}, public={}, private_seeds={}, network=u'testnet'):
         # It is possible to distinguish between private and public seeds
         # based on the string content.  Consider modifying this function
         # to take merely one dict of seeds.  Trees should still be stored
@@ -59,8 +66,20 @@ class MultiWallet(object):
         self.public_trees = {}
         self._network = network
 
+        def treegen(value, entropy=False):
+            if entropy:
+                bip32.Wallet.from_master_secret(
+                    value,
+                    self.network_code(network)).wallet_key(as_private=True)
+            else:
+                bip32.Wallet.from_wallet_key(value)
+
         for name, seed in private.iteritems():
-            tree = bip32.Wallet.from_wallet_key(seed)
+            tree = treegen(seed)
+            self.private_trees[name] = self.trees[name] = tree
+
+        for name, seed in private_seeds.iteritems():
+            tree = treegen(seed, True)
             self.private_trees[name] = self.trees[name] = tree
 
         for name, seed in public.iteritems():
