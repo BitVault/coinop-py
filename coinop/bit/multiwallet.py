@@ -22,20 +22,27 @@ class MultiWallet(object):
 
     # Given a list of tree names, create a MultiWallet containing private
     # trees.
+    # If `entropy` is true, return a 2-tuple of a dict of name:secret pairs and
+    # a MultiWallet
     @classmethod
-    def generate(cls, names, network=u'testnet'):
-        seeds = {}
+    def generate(cls, names, entropy=False, network=u'testnet'):
         def create_node(name):
             secret = random(32)
-            # FIXME: set blockchain/network correctly
-            if network in [u'bitcoin', u'mainnet']:
-                tree = bip32.Wallet.from_master_secret(secret, netcode=u'BTC')
-            else:
-                tree = bip32.Wallet.from_master_secret(secret, netcode=u'XTN')
-            return tree
+            netcode = u'BTC' if network in [u'bitcoin', u'mainnet'] else u'XTN'
+
+            tree = bip32.Wallet.from_master_secret(secret, netcode)
+            return (secret, tree)
+
+        seeds = {}
+        if entropy:
+            secrets = {}
+            for name in names:
+                (secrets[name], tree) = create_node(name)
+                seeds[name] = tree.wallet_key(as_private=True)
+            return secrets, cls(private=seeds, network=network)
 
         for name in names:
-            seeds[name] = create_node(name).wallet_key(as_private=True)
+            seeds[name] = create_node(name)[1].wallet_key(as_private=True)
 
         return cls(private=seeds, network=network)
 
