@@ -1,8 +1,8 @@
 coinop-py: python crypto currency conveniences
 
 
-coinop-py is still alpha code but is in active development. Bug reports and
-patches welcome.
+coinop-py is in active development. Bug reports and
+pull requests welcome.
 
 
 Installing coinop-py:
@@ -22,16 +22,9 @@ Prerequisites:
 
 Installing:
 
-1. *Manually* install PyNaCl to work around an install bug on some machines:
-
-    $ pip install PyNaCl
-
 (if you're not using a virtual environment, you obviously need to run pip
 with sudo)
 
-2. Install coinop from PyPI:
+1. Install coinop from PyPI:
 
     $ pip install coinop
-
-(if you're not using a virtual environment, you obviously need to run pip
-with sudo)
