@@ -36,7 +36,7 @@ class MultiWallet(object):
 
             tree = bip32.Wallet.from_master_secret(secret,
                                                    cls.network_code(network))
-            return (secret, tree)
+            return (hexlify(secret), tree)
 
         seeds = {}
         if entropy:
