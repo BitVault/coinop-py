@@ -68,11 +68,11 @@ class MultiWallet(object):
 
         def treegen(value, entropy=False):
             if entropy:
-                bip32.Wallet.from_master_secret(
+                return bip32.Wallet.from_master_secret(
                     value,
                     self.network_code(network)).wallet_key(as_private=True)
             else:
-                bip32.Wallet.from_wallet_key(value)
+                return bip32.Wallet.from_wallet_key(value)
 
         for name, seed in private.iteritems():
             tree = treegen(seed)
