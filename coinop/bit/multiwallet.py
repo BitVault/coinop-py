@@ -42,12 +42,11 @@ class MultiWallet(object):
         if entropy:
             secrets = {}
             for name in names:
-                (secrets[name], tree) = create_node(name)
-                seeds[name] = tree.wallet_key(as_private=True)
+                (secrets[name], seeds[name]) = create_node(name)
             return secrets, cls(private=seeds, network=network)
 
         for name in names:
-            seeds[name] = create_node(name)[1].wallet_key(as_private=True)
+            seeds[name] = create_node(name)[1]
 
         return cls(private=seeds, network=network)
 
@@ -69,8 +68,7 @@ class MultiWallet(object):
         def treegen(value, entropy=False):
             if entropy:
                 return bip32.Wallet.from_master_secret(
-                    value,
-                    self.network_code(network)).wallet_key(as_private=True)
+                    value, self.network_code(network))
             else:
                 return bip32.Wallet.from_wallet_key(value)
 
