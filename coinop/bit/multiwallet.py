@@ -31,24 +31,15 @@ class MultiWallet(object):
     # a MultiWallet
     @classmethod
     def generate(cls, names, entropy=False, network=u'testnet'):
-        def create_node(name):
-            secret = random(32)
 
-            tree = bip32.Wallet.from_master_secret(secret,
-                                                   cls.network_code(network))
-            return (hexlify(secret), tree)
 
-        seeds = {}
-        if entropy:
-            secrets = {}
-            for name in names:
-                (secrets[name], seeds[name]) = create_node(name)
-            return secrets, cls(private=seeds, network=network)
-
+        secrets = {}
         for name in names:
-            seeds[name] = create_node(name)[1]
+            secrets[name] = hexlify(random(32))
 
-        return cls(private=seeds, network=network)
+        if entropy:
+            return secrets, cls(private_seeds=secrets, network=network)
+        return cls(private_seeds=secrets, network=network)
 
 
     # The private and public arguments are dicts that contain HDW seed
@@ -68,7 +59,7 @@ class MultiWallet(object):
         def treegen(value, entropy=False):
             if entropy:
                 return bip32.Wallet.from_master_secret(
-                    value, self.network_code(network))
+                    unhexlify(value), self.network_code(network))
             else:
                 return bip32.Wallet.from_wallet_key(value)
 
