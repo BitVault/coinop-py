@@ -28,9 +28,7 @@ from Crypto.Protocol.KDF import PBKDF2
 
 class PassphraseBox:
 
-    # FIXME:  PassphraseBox in Ruby has the default iterations set
-    # to 100,000.  One or the other needs to change.
-    ITERATIONS = 10000
+    ITERATIONS = 100000
 
     # Given passphrase and plaintext as strings, returns a dict
     # containing the ciphertext and other values needed for later
@@ -55,16 +53,11 @@ class PassphraseBox:
     # it creates an entirely new secret box.
     def __init__(self, passphrase, salt=None, iterations=None):
         passphrase = passphrase.encode('utf-8')
-        if salt is None:
-            salt = random(16)
-            iterations = self.ITERATIONS
-        else:
-            salt = salt.decode('hex')
+        self.salt = salt.decode('hex') if salt else random(16)
+        self.iterations = iterations if iterations else self.ITERATIONS
 
-        key = PBKDF2(passphrase, salt, 32, iterations)
+        key = PBKDF2(passphrase, self.salt, 32, self.iterations)
 
-        self.salt = salt
-        self.iterations = iterations
         self.box = SecretBox(key)
 
 
@@ -80,5 +73,3 @@ class PassphraseBox:
 
     def _decrypt(self, ciphertext, nonce):
         return self.box.decrypt(ciphertext.decode('hex'), nonce.decode('hex'))
-
-
