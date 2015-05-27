@@ -1,4 +1,13 @@
 
+0.2.0 / 2015-05-27
+==================
+
+  *  network agnosticity possible -- many things don't work.
+  *  upgrade dependencies (pycoin -> 0.52, python-bitcoinlib -> 0.4.0)
+  *  removed txt from license file -- it was bugging me
+  *  Cleanup and increased default iterations by a factor of ten to match other coinop packages.
+  *  refactored seed/secret storage
+
 0.1.3 / 2015-03-24
 ==================
 
