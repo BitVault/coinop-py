@@ -20,33 +20,25 @@ import bitcoin.base58 as base58
 
 class MultiWallet(object):
 
-    @classmethod
-    def network_code(cls, name):
-        return u'BTC' if name in [u'bitcoin', u'mainnet'] else u'XTN'
-
-
-    # Given a list of tree names, create a MultiWallet containing private
-    # trees.
+    # Given a list of tree names, create a MultiWallet containing private trees.
     # If `entropy` is true, return a 2-tuple of a dict of name:secret pairs and
     # a MultiWallet
     @classmethod
-    def generate(cls, names, entropy=False, network=u'testnet'):
-
-
+    def generate(cls, names, entropy=False):
         secrets = {}
         for name in names:
             secrets[name] = hexlify(random(32))
 
         if entropy:
-            return secrets, cls(private_seeds=secrets, network=network)
-        return cls(private_seeds=secrets, network=network)
+            return secrets, cls(private_seeds=secrets)
+        return cls(private_seeds=secrets)
 
 
     # The private and public arguments are dicts that contain HDW seed
-    # strings, keyed by name.
+    # strings in WIF format, keyed by name.
     # private_seeds is a dict of the same form but containing raw entropy
     # instead of a node
-    def __init__(self, private={}, public={}, private_seeds={}, network=u'testnet'):
+    def __init__(self, private={}, public={}, private_seeds={}):
         # It is possible to distinguish between private and public seeds
         # based on the string content.  Consider modifying this function
         # to take merely one dict of seeds.  Trees should still be stored
@@ -54,7 +46,6 @@ class MultiWallet(object):
         self.trees = {}
         self.private_trees = {}
         self.public_trees = {}
-        self._network = network
 
         def treegen(value, entropy=False):
             if entropy:
@@ -80,12 +71,6 @@ class MultiWallet(object):
         for name, seed in public.iteritems():
             tree = BIP32Node.from_hwif(seed)
             self.public_trees[name] = self.trees[name] = tree
-
-    @property
-    def network(self): return self._network
-
-    @network.setter
-    def network(self, value): self._network = value
 
     def to_dict(self):
         return dict(private=self.private_seeds(), public=self.public_seeds())
@@ -128,6 +113,7 @@ class MultiWallet(object):
 
     # Determines whether the script included in an Output was generated
     # from this wallet.
+    # TODO: support multi-network
     def is_valid_output(self, output):
         # TODO: better error handling in case no wallet_path is found.
         # May also be better to take the wallet_path as an argument to
@@ -157,14 +143,13 @@ class MultiWallet(object):
 # a given path.
 class MultiNode(object):
 
-    def __init__(self, path, private={}, public={}, network=u'testnet'):
+    def __init__(self, path, private={}, public={}):
         self.path = path
         self.private = private
         self.public = public
 
         self.private_keys = {}
         self.public_keys = {}
-        self.network = network
 
         for name, node in private.iteritems():
             priv = PrivateKey.from_secret(node._secret_exponent_bytes)
@@ -184,26 +169,17 @@ class MultiNode(object):
 
         return Script(public_keys=keys, needed=m)
 
+    p2sh_script = script
+
     # Returns the P2SH address for a m-of-n multisig script using the
     # public keys derived for this node.
-    def address(self, network=None):
-        network = network if network else self.network
-        # FIXME: Should take the M argument and pass into self.script()
-        # Otherwise, this is always a 2-of-n script address.
-        return self.script().p2sh_address(network=network)
-
-
-    # Returns the P2SH script to be used as the scriptPubkey for an Output.
-    def p2sh_script(self, network=None):
-        network = network if network else self.network
-        # FIXME: take an M argument to pass to self.address()
-        return Script(p2sh_address=self.address(network=network))
+    def address(self, m=2, network=None):
+        return self.script(m).p2sh_address(network=network)
 
     # Returns a dict of signatures, keyed by the tree names.
     def signatures(self, value):
         names = sorted(self.private_keys.keys())
-        s = ((name, base58.encode(self.sign(name, value))) for name in names)
-        return dict(s)
+        return {name: base58.encode(self.sign(name, value)) for name in names}
 
     def sign(self, name, value):
         try:
