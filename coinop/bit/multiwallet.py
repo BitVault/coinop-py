@@ -1,7 +1,7 @@
 from binascii import hexlify, unhexlify
 
 from nacl.utils import random
-from pycoin.key import bip32
+from pycoin.key.BIP32Node import BIP32Node
 
 from .script import Script
 from .keys import PrivateKey, PublicKey
@@ -58,10 +58,16 @@ class MultiWallet(object):
 
         def treegen(value, entropy=False):
             if entropy:
-                return bip32.Wallet.from_master_secret(
-                    unhexlify(value), self.network_code(network))
+                # this method also takes a netcode parameter, but we don't care
+                # what network pycoin thinks this node is, because we only use it
+                # for key derivation.
+                return BIP32Node.from_master_secret(unhexlify(value))
             else:
-                return bip32.Wallet.from_wallet_key(value)
+                # this method will infer a network from the header bytes. We
+                # don't care right now for the same reason as above, but we will
+                # if Gem's API stops returning 'xpub' as the pubkey header bytes
+                # because if pycoin doesn't recognize a header it will error.
+                return BIP32Node.from_hwif(value)
 
         for name, seed in private.iteritems():
             tree = treegen(seed)
@@ -72,7 +78,7 @@ class MultiWallet(object):
             self.private_trees[name] = self.trees[name] = tree
 
         for name, seed in public.iteritems():
-            tree = bip32.Wallet.from_wallet_key(seed)
+            tree = BIP32Node.from_hwif(seed)
             self.public_trees[name] = self.trees[name] = tree
 
     @property
@@ -84,44 +90,41 @@ class MultiWallet(object):
     def to_dict(self):
         return dict(private=self.private_seeds(), public=self.public_seeds())
 
-    def private_seed(self, name):
+    def private_wif(self, name):
         try:
-            return self.private_trees[name].wallet_key(as_private=True)
+            return self.private_trees[name].hwif(as_private=True)
         except KeyError:
             raise Exception("No private tree for '{0}'".format(name))
 
-    def private_seeds(self):
-        out = {}
-        for name, tree in self.private_trees.iteritems():
-            out[name] = self.private_seed(name)
-        return out
+    def private_wifs(self):
+        return { name: self.private_wif(name)
+                 for name in self.private_trees.keys() }
 
-    def public_seed(self, name):
+    def public_wif(self, name):
         tree = self.public_trees.get(name, None)
         if not tree:
             tree = self.private_trees.get(name, None)
         if not tree:
             raise Exception("No public tree for '{0}'".format(name))
-        return tree.wallet_key()
+        return tree.hwif()
 
-    def public_seeds(self):
-        out = {}
-        for name, tree in self.public_trees.iteritems():
-            out[name] = self.public_seed(name)
-        return out
+    def public_wifs(self):
+        return { name: self.public_wif(name)
+                 for name in self.public_trees.keys() }
 
     # Given a wallet path, returns a MultiNode for that path.
+    # The path string should either begin with 'm/' or be relative to the master
+    # node.
     def path(self, path):
-        _path = path[2:]
-        options = { 'private': {}, 'public': {} }
+        _path = path[2:] if path[:2] == 'm/' else path
 
-        for name, tree in self.private_trees.iteritems():
-            options['private'][name] = tree.subkey_for_path(_path)
-        for name, tree in self.public_trees.iteritems():
-            options['public'][name] = tree.subkey_for_path(_path)
-        options['network'] = self.network
+        private = { name: tree.subkey_for_path(_path)
+                    for name, tree in self.private_trees.iteritems() }
 
-        return MultiNode(path, **options)
+        public = { name: tree.subkey_for_path(_path)
+                   for name, tree in self.public_trees.iteritems() }
+
+        return MultiNode(path, private=private, public=public)
 
     # Determines whether the script included in an Output was generated
     # from this wallet.
@@ -129,15 +132,11 @@ class MultiWallet(object):
         # TODO: better error handling in case no wallet_path is found.
         # May also be better to take the wallet_path as an argument to
         # the function.
-        path = output.metadata['wallet_path']
-        node = self.path(path)
-        # TODO: use python equiv of ruby to_s
-        # apparently the global str() ?
-        # FIXME: node.p2sh_script should be taking an M argument indicating
-        # how many signatures are required to authorize.
-        ours = node.p2sh_script(network=self.network).to_string()
-        theirs = output.script.to_string()
-        return ours == theirs
+        node = self.path(output.metadata['wallet_path'])
+
+        generated_script = node.p2sh_script().to_string()
+        given_script = output.script.to_string()
+        return generated_script == given_script
 
     # Returns a list of signature dicts, corresponding to the inputs
     # for the supplied transaction.
@@ -156,7 +155,7 @@ class MultiWallet(object):
 
 # Manages any number of BIP 32 nodes (private and/or public) derived from
 # a given path.
-class MultiNode:
+class MultiNode(object):
 
     def __init__(self, path, private={}, public={}, network=u'testnet'):
         self.path = path
@@ -168,16 +167,16 @@ class MultiNode:
         self.network = network
 
         for name, node in private.iteritems():
-            priv = PrivateKey.from_secret(node.secret_exponent_bytes)
+            priv = PrivateKey.from_secret(node._secret_exponent_bytes)
             self.private_keys[name] = priv
 
             pub = priv.public_key()
             self.public_keys[name] = pub
 
         for name, node in public.iteritems():
-            pub = PublicKey.from_pair(node.public_pair)
+            pub = PublicKey.from_pair(node.public_pair())
             self.public_keys[name] = pub
-            pass
+
 
     def script(self, m=2):
         names = sorted(self.public_keys.keys())
@@ -218,6 +217,7 @@ class MultiNode:
             raise Exception("No such key: '{0}'".format(name))
 
 
+    # TODO: pretty sure this is never used and doesn't work.
     # Generate the script_sig for a set of signatures.
     def script_sig(self, signatures):
         self.script.p2sh_sig(signatures=signatures)

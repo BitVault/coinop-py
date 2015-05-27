@@ -1,16 +1,14 @@
 from binascii import hexlify, unhexlify
 
-#python-bitcoinlib
+from bitcoin.core.script import (CScript, OPCODES_BY_NAME, OP_CHECKMULTISIG,
+    OP_HASH160, OP_EQUAL, CScriptTruncatedPushDataError, CScriptInvalidError)
 
-from bitcoin.core.script import CScript, OPCODES_BY_NAME, OP_CHECKMULTISIG, OP_HASH160, OP_EQUAL, CScriptTruncatedPushDataError, CScriptInvalidError
-
-import bitcoin
 from bitcoin.wallet import CBitcoinAddress
-from bitcoin.core import b2x, Hash160
+from bitcoin.core import b2x, Hash, Hash160
 from bitcoin.base58 import encode, decode
 
 def encode_address(data, network):
-    # TODO: true multi-network support
+    # TODO: any multi-network support
     if network == "mainnet":
         version = 5
     elif network == "testnet":
@@ -19,9 +17,9 @@ def encode_address(data, network):
         raise ValueError("Unknown network")
 
     data = chr(version) + data
-    check = bitcoin.core.Hash(data)[0:4]
+    check = Hash(data)[0:4]
     return encode(data + check)
-            
+
 
 # Given a script in human-readable "asm" form, returns the script as a
 # byte string.
@@ -101,7 +99,7 @@ def cscript_to_string(cscript):
 
 
 # A wrapper class to make it easier to work with CScript
-class Script:
+class Script(object):
 
     # Valid keywords:
     #
@@ -163,4 +161,3 @@ class Script:
     # the set of public keys to be used (but not any signatures)
     def p2sh_address(self, network="testnet"):
         return encode_address(self.hash160(), network)
-

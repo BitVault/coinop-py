@@ -1,7 +1,5 @@
 from binascii import hexlify, unhexlify
 
-#python-bitcoinlib
-
 from bitcoin.core.script import CScript, SignatureHash, SIGHASH_ALL
 from bitcoin.core import lx, b2lx, COutPoint, CTxIn, CTxOut, CTransaction
 
@@ -14,9 +12,6 @@ from coinop.bit.script import Script
 class Input:
 
     def __init__(self, data, transaction=None, index=None):
-        # TODO:  seems overkill to take a data arg that only ever
-        # contains the "output" field.  Consider making output be
-        # a direct argument.
         self.transaction = transaction
         self.index = index
 
@@ -45,11 +40,14 @@ class Input:
         return CTxIn(outpoint)
 
     # Returns the digest for this input, the value to be signed when
-    # authorizing the input (creating the scriptSig)
+    #   authorizing the input (creating the scriptSig) in binary format
+    # Note that if this input was not initialized with a 'sig_hash'
+    #   then due to python-bitcoinlib's lack of altcoin support, this will
+    #   only work for bitcoin main/testnet (whatever the bitcoin singleton was
+    #   set to.
     def sig_hash(self, redeem_script=None):
-        # FIXME: As noted in the Transaction method below, we probably
-        # should always require a redeem_script.
-        return self.transaction.sig_hash(self, redeem_script)
+        return (self.sig_hash_bytes if self.sig_hash_bytes else
+                self.transaction.sig_hash(self, redeem_script))
 
 # Wrapper for CTxOut
 class Output:
@@ -146,4 +144,3 @@ class Transaction:
     def hex_hash(self):
         # bytes to little-endian hex
         return b2lx(Hash(self.native().serialize()))
-
