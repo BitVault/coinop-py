@@ -9,19 +9,18 @@ setup(name='coinop',
       author='Matt Smith',
       author_email='matt@gem.co',
       license='MIT',
-      packages=find_packages(
-          exclude=['*.tests',
-                   '*.tests.*',
-                   'tests.*',
-                   'tests']),
+      packages=find_packages(exclude=[
+          '*.tests', '*.tests.*', 'tests.*','tests']),
       install_requires=[
-          'PyNaCl==0.3.0',
-          'cffi',
-          'pytest',
           'pycrypto',
           'python-bitcoinlib==0.4.0',
           'pycoin==0.52',
           'PyYAML',
+          'future',
           'ecdsa'
       ],
+      tests_require=[
+        'tox',
+      ],
+
       zip_safe=False)

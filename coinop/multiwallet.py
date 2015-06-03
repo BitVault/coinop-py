@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
-from fututre.utils import iteritems
+from future.utils import iteritems
 from binascii import hexlify, unhexlify
 
-from nacl.utils import random
+from os import urandom
 from pycoin.key.BIP32Node import BIP32Node
 
 from .script import Script
@@ -29,7 +29,7 @@ class MultiWallet(object):
     def generate(cls, names, entropy=False):
         secrets = {}
         for name in names:
-            secrets[name] = hexlify(random(32))
+            secrets[name] = hexlify(urandom(32))
 
         if entropy:
             return secrets, cls(private_seeds=secrets)

@@ -7,7 +7,7 @@ from bitcoin.core import lx, b2lx, COutPoint, CTxIn, CTxOut, CTransaction
 # sha256 the input value twice.  Duplicated in this project's util package.
 from bitcoin.core.serialize import Hash
 
-from coinop.bit.script import Script
+from .script import Script
 
 # Wrapper for CTxIn
 class Input(object):

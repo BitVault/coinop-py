@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
+from future.builtins import bytes, str
 
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
 from Crypto.Hash import HMAC, SHA256
 from os import urandom
 from random import randint
+from binascii import hexlify, unhexlify
 
 # PassphraseBox is a high-level wrapper to an authenticated encryption
 # mechanism composed of PBKDF2, AES-CBC-256, and HMAC-SHA-256
@@ -47,7 +49,7 @@ class PassphraseBox(object):
     # it creates an entirely new secret box.
     def __init__(self, passphrase, salt=None, iterations=None):
         passphrase = passphrase.encode('utf-8')
-        self.salt = salt.decode('hex') if salt else urandom(16)
+        self.salt = unhexlify(salt) if salt else urandom(16)
         if iterations:
             self.iterations = iterations
         else:
@@ -56,27 +58,30 @@ class PassphraseBox(object):
 
         key = PBKDF2(passphrase, self.salt, 64, self.iterations)
 
-        self.cipher = AES.new(key[:32], AES.MODE_CBC, iv)
+        self.aes_key = key[:32]
         self.hmac_key = key[32:]
 
     def _encrypt(self, plaintext):
         plaintext = plaintext.encode('utf-8')
         iv = urandom(16)
-        encrypted = self.cipher.encrypt(plaintext)
+        cipher = AES.new(self.aes_key, AES.MODE_CBC, iv)
+        encrypted = cipher.encrypt(plaintext)
+
         hmac = HMAC.new(self.hmac_key, digestmod=SHA256)
         hmac.update(iv + encrypted)
         ciphertext = encrypted + hmac.digest()
-        return {'salt': self.salt.encode('hex'),
+
+        return {'salt': hexlify(self.salt),
                 'iterations': self.iterations,
-                'iv': iv.encode('hex'),
-                'ciphertext': ciphertext.encode('hex')}
+                'iv': hexlify(iv),
+                'ciphertext': hexlify(ciphertext)}
 
     def _decrypt(self, ciphertext, iv):
-        ciphertext = ciphertext.decode('hex')
-        mac, ciphertext = ciphertext[-64:], ciphertext[:-64]
+        ciphertext, iv = unhexlify(ciphertext), unhexlify(iv)
+        mac, ciphertext = ciphertext[-32:], ciphertext[:-32]
         hmac = HMAC.new(self.hmac_key, digestmod=SHA256)
         hmac.update(iv + ciphertext)
         if hmac.digest() != mac:
             raise IntegrityError('Invalid authentication code - this ciphertext may have been tampered with.')
 
-        return self.cipher.decrypt(ciphertext)
+        return AES.new(self.aes_key, AES.MODE_CBC, iv).decrypt(ciphertext).decode('utf-8')

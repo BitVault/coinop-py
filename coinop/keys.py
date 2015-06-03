@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from builtins import chr
+from future.builtins import chr
 
 from binascii import hexlify, unhexlify
 
