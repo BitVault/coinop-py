@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from binascii import hexlify, unhexlify
 
 from ecdsa import SECP256k1, SigningKey, VerifyingKey
@@ -70,4 +71,3 @@ class PublicKey(object):
         order = pubkey.order
         x, y = [pubkey.point.x(), pubkey.point.y()]
         return  chr(2 + (y & 1)) + number_to_string(x, order)
-

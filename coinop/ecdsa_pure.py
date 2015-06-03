@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # python-ecdsa wrapper
 # see https://github.com/warner/python-ecdsa
 # see http://lapo.it/asn1js/
+from __future__ import unicode_literals
 
 import ecdsa
 import random

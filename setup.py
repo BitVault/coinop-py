@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from setuptools import setup, find_packages
 
 
@@ -8,8 +9,11 @@ setup(name='coinop',
       author='Matt Smith',
       author_email='matt@gem.co',
       license='MIT',
-      packages=find_packages(exclude=[
-          u'*.tests', u'*.tests.*', u'tests.*', u'tests']),
+      packages=find_packages(
+          exclude=['*.tests',
+                   '*.tests.*',
+                   'tests.*',
+                   'tests']),
       install_requires=[
           'PyNaCl==0.3.0',
           'cffi',
