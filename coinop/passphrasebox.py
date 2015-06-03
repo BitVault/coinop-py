@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from future.builtins import bytes, str
+from builtins import bytes, str
 
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES

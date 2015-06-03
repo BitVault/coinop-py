@@ -3,11 +3,11 @@ from __future__ import unicode_literals
 import pytest
 from random import randint
 from os import urandom
-from coinop.passphrasebox import PassphraseBox
+from ..passphrasebox import PassphraseBox
 
 @pytest.fixture(scope="session")
 def passphrase():
-    return 'asdf'
+    return 'asdfasdf'
 
 @pytest.fixture
 def plaintext():
@@ -15,10 +15,10 @@ def plaintext():
 
 @pytest.fixture
 def encrypted():
-    return {'ciphertext': 'd9c92b01601524ce6d1a0a0f520107455ba349c82e507fc1e7a2233a02f59011099b3f68b105c8eb311b61b2a4be7db4',
-            'salt': 'c20ce26af711de80c105492f5eee4b78',
-            'iterations': 94077,
-            'iv': '9139a0afc042874ffffd6a751cd41c6c'}
+    return {'ciphertext': 'e64cd877f968c408f9a0a2dbcf8e14667ef825c4349e1822ac4896a2553a751ec2346a8321027a3f947243c011025163',
+            'salt': '2eb78d2e7331e8462847a00f325d94b5',
+            'iterations': 97917,
+            'iv': '1bc9947601b4292059d4da59852dba30'}
 
 @pytest.fixture
 def salt(encrypted):
