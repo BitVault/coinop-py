@@ -61,9 +61,11 @@ class PassphraseBox(object):
         self.aes_key = key[:32]
         self.hmac_key = key[32:]
 
-    def _encrypt(self, plaintext):
+    def _encrypt(self, plaintext, iv=None):
         plaintext = plaintext.encode('utf-8')
-        iv = urandom(16)
+
+        iv = urandom(16) if not iv else unhexlify(iv)
+
         cipher = AES.new(self.aes_key, AES.MODE_CBC, iv)
         encrypted = cipher.encrypt(plaintext)
 
@@ -71,10 +73,10 @@ class PassphraseBox(object):
         hmac.update(iv + encrypted)
         ciphertext = encrypted + hmac.digest()
 
-        return {'salt': hexlify(self.salt),
+        return {'salt': hexlify(self.salt).decode('utf-8'),
                 'iterations': self.iterations,
-                'iv': hexlify(iv),
-                'ciphertext': hexlify(ciphertext)}
+                'iv': hexlify(iv).decode('utf-8'),
+                'ciphertext': hexlify(ciphertext).decode('utf-8')}
 
     def _decrypt(self, ciphertext, iv):
         ciphertext, iv = unhexlify(ciphertext), unhexlify(iv)
