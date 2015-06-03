@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 # Annoying warning at startup:
 # https://github.com/pyca/pynacl/issues/62
 # Fixed June 18th 2014.
@@ -26,7 +28,7 @@ from Crypto.Protocol.KDF import PBKDF2
 # is somewhat resistant to brute force attacks.  Great care should still
 # be taken to avoid passphrases that are subject to dictionary attacks.
 
-class PassphraseBox:
+class PassphraseBox(object):
 
     ITERATIONS = 100000
 

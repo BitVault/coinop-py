@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+from builtins import chr
+
 from binascii import hexlify, unhexlify
 
 from ecdsa import SECP256k1, SigningKey, VerifyingKey
@@ -15,8 +17,6 @@ class PrivateKey(object):
 
     @classmethod
     def from_secret(cls, secret):
-        # TODO: consider renaming to from_string, for parallelism with
-        # PublicKey's class method of that name.
         key = SigningKey.from_string(secret, curve=SECP256k1)
         return cls(key)
 

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from binascii import hexlify, unhexlify
 
 from bitcoin.core.script import CScript, SignatureHash, SIGHASH_ALL
@@ -9,7 +10,7 @@ from bitcoin.core.serialize import Hash
 from coinop.bit.script import Script
 
 # Wrapper for CTxIn
-class Input:
+class Input(object):
 
     def __init__(self, data, transaction=None, index=None):
         self.transaction = transaction
@@ -50,7 +51,7 @@ class Input:
                 self.transaction.sig_hash(self, redeem_script))
 
 # Wrapper for CTxOut
-class Output:
+class Output(object):
 
     def __init__(self, data, transaction=None):
         if transaction:
@@ -84,8 +85,7 @@ class Output:
 
 
 # A wrapper to make it easier to work with CTransaction
-class Transaction:
-
+class Transaction(object):
 
     def __init__(self, **options):
         self.inputs = []

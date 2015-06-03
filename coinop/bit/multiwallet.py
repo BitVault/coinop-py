@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from fututre.utils import iteritems
 from binascii import hexlify, unhexlify
 
 from nacl.utils import random
@@ -60,15 +62,15 @@ class MultiWallet(object):
                 # because if pycoin doesn't recognize a header it will error.
                 return BIP32Node.from_hwif(value)
 
-        for name, seed in private.iteritems():
+        for name, seed in iteritems(private):
             tree = treegen(seed)
             self.private_trees[name] = self.trees[name] = tree
 
-        for name, seed in private_seeds.iteritems():
+        for name, seed in iteritems(private_seeds):
             tree = treegen(seed, True)
             self.private_trees[name] = self.trees[name] = tree
 
-        for name, seed in public.iteritems():
+        for name, seed in iteritems(public):
             tree = BIP32Node.from_hwif(seed)
             self.public_trees[name] = self.trees[name] = tree
 
@@ -104,10 +106,10 @@ class MultiWallet(object):
         _path = path[2:] if path[:2] == 'm/' else path
 
         private = { name: tree.subkey_for_path(_path)
-                    for name, tree in self.private_trees.iteritems() }
+                    for name, tree in iteritems(self.private_trees) }
 
         public = { name: tree.subkey_for_path(_path)
-                   for name, tree in self.public_trees.iteritems() }
+                   for name, tree in iteritems(self.public_trees) }
 
         return MultiNode(path, private=private, public=public)
 
@@ -151,14 +153,14 @@ class MultiNode(object):
         self.private_keys = {}
         self.public_keys = {}
 
-        for name, node in private.iteritems():
+        for name, node in iteritems(private):
             priv = PrivateKey.from_secret(node._secret_exponent_bytes)
             self.private_keys[name] = priv
 
             pub = priv.public_key()
             self.public_keys[name] = pub
 
-        for name, node in public.iteritems():
+        for name, node in iteritems(public):
             pub = PublicKey.from_pair(node.public_pair())
             self.public_keys[name] = pub
 
