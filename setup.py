@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='coinop',
-      version = '0.2.0',
+      version = '0.3.0',
       description = 'Crypto-currency conveniences',
       url = 'http://github.com/GemHQ/coinop-py',
       author = 'Matt Smith',
@@ -13,6 +13,7 @@ setup(name='coinop',
           '*.tests', '*.tests.*', 'tests.*','tests']),
       install_requires = [
           'pycrypto',
+          'pbkdf2_ctypes',
           'python-bitcoinlib==0.4.0',
           'pycoin==0.52',
           'PyYAML',
