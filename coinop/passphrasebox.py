@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from builtins import bytes, str
 
-from Crypto.Protocol.KDF import PBKDF2
+from pbkdf2_ctypes import pbkdf2_bin
 from Crypto.Cipher import AES
 from Crypto.Hash import HMAC, SHA256
 from os import urandom
@@ -56,13 +56,16 @@ class PassphraseBox(object):
             # per OWASP, use a random number of iterations between 90k and 110k
             self.iterations = self.ITERATIONS + randint(0,20000)
 
-        key = PBKDF2(passphrase, self.salt, 64, self.iterations)
+        key = pbkdf2_bin(passphrase,
+                         salt=self.salt,
+                         iterations=self.iterations,
+                         keylen=64)
 
         self.aes_key = key[:32]
         self.hmac_key = key[32:]
 
     def _encrypt(self, plaintext, iv=None):
-        plaintext = plaintext.encode('utf-8')
+        plaintext = str(plaintext).encode('utf-8')
 
         iv = urandom(16) if not iv else unhexlify(iv)
 

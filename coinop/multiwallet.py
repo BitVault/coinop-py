@@ -29,7 +29,7 @@ class MultiWallet(object):
     def generate(cls, names, entropy=False):
         secrets = {}
         for name in names:
-            secrets[name] = hexlify(urandom(32))
+            secrets[name] = hexlify(urandom(32)).decode('utf-8')
 
         if entropy:
             return secrets, cls(private_seeds=secrets)
