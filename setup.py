@@ -3,15 +3,15 @@ from setuptools import setup, find_packages
 
 
 setup(name='coinop',
-      version='0.2.0',
-      description='Crypto-currency conveniences',
-      url='http://github.com/GemHQ/coinop-py',
-      author='Matt Smith',
-      author_email='matt@gem.co',
-      license='MIT',
-      packages=find_packages(exclude=[
+      version = '0.2.0',
+      description = 'Crypto-currency conveniences',
+      url = 'http://github.com/GemHQ/coinop-py',
+      author = 'Matt Smith',
+      author_email = 'matt@gem.co',
+      license = 'MIT',
+      packages = find_packages(exclude=[
           '*.tests', '*.tests.*', 'tests.*','tests']),
-      install_requires=[
+      install_requires = [
           'pycrypto',
           'python-bitcoinlib==0.4.0',
           'pycoin==0.52',
@@ -19,8 +19,5 @@ setup(name='coinop',
           'future',
           'ecdsa'
       ],
-      tests_require=[
-        'tox',
-      ],
-
+      tests_require = [ 'tox' ],
       zip_safe=False)
