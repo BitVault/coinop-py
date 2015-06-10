@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from future.builtins import int, bytes, chr
+from future.builtins import bytes
 
 from binascii import hexlify, unhexlify
 
@@ -18,7 +18,7 @@ def encode_address(hash160, network):
     else:
         raise ValueError("Unknown network")
 
-    data = chr(version) + hash160
+    data = bytes([version]) + hash160
     checksum = Hash(data)[0:4]
     return encode(data + checksum)
 
@@ -46,7 +46,7 @@ def from_string(string):
             r.append(CScript([int(word)]))
         elif ishex(word):
             word_bytes = unhexlify(word.encode('utf8'))
-            push_code = chr(len(word_bytes))
+            push_code = bytes([len(word_bytes)])
             r.append(push_code + word_bytes)
 
         elif len(word) >= 2 and word[0] == "'" and word[-1] == "'":
@@ -108,8 +108,8 @@ class Script(object):
     # * p2sh_address - A pay-to-script-hash address
     # * public_keys, needed - the public keys for a multisig script and
     #   the number of signatures needed for valid authorization.
-    def __init__(self, cscript=None, string=None, binary=None, hex=None,
-                 p2sh_address=None, public_keys=[], needed=1):
+    def __init__(self, cscript=None, string=None, type=None, binary=None,
+                 hex=None, p2sh_address=None, public_keys=[], needed=1):
         if cscript:
             self.set_cscript(cscript)
         elif string:
@@ -123,7 +123,7 @@ class Script(object):
         # TODO: add a branch for handling 'address', which should be able
         # to work with either P2SH or regular addresses
         elif public_keys and needed:
-            self.set_cscript(multisig(**options))
+            self.set_cscript(multisig(public_keys, needed))
         else:
             raise Exception("Invalid options")
 

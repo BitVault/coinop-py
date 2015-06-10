@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from future.builtins import chr
+from future.builtins import bytes
 
 from binascii import hexlify, unhexlify
 
@@ -70,4 +70,4 @@ class PublicKey(object):
         pubkey = self.key.pubkey
         order = pubkey.order
         x, y = [pubkey.point.x(), pubkey.point.y()]
-        return  chr(2 + (y & 1)) + number_to_string(x, order)
+        return  bytes([2 + (y & 1)]) + number_to_string(x, order)

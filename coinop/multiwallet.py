@@ -129,7 +129,7 @@ class MultiWallet(object):
     # Returns a list of signature dicts, corresponding to the inputs
     # for the supplied transaction.
     def signatures(self, transaction):
-        return map(self.sign_input, transaction.inputs)
+        return list(map(self.sign_input, transaction.inputs))
 
     # Given an Input (the output of which must contain a wallet_path in
     # its metadata) return a dictionary of signatures.  The dict keys
