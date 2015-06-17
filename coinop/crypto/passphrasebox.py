@@ -8,7 +8,6 @@ from nacl.secret import SecretBox
 
 # FIXME: doesn't look like the nacl.utils import is being used.
 import nacl.utils
-from nacl.utils import random
 from random import randint
 from os import urandom
 
@@ -75,7 +74,7 @@ class PassphraseBox(object):
 
     def _encrypt(self, plaintext):
         plaintext = plaintext.encode('utf-8')
-        nonce = random(SecretBox.NONCE_SIZE)
+        nonce = urandom(SecretBox.NONCE_SIZE)
         encrypted = self.box.encrypt(plaintext, nonce)
         ciphertext = encrypted.ciphertext
         return dict(
