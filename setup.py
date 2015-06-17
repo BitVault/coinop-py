@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='coinop',
-      version = '0.3.0',
+      version = '0.2.1',
       description = 'Crypto-currency conveniences',
       url = 'http://github.com/GemHQ/coinop-py',
       author = 'Matt Smith',
@@ -18,7 +18,8 @@ setup(name='coinop',
           'pycoin==0.52',
           'PyYAML',
           'future',
-          'ecdsa'
+          'ecdsa',
+          'PyNaCl==0.3.0'
       ],
       tests_require = [ 'tox' ],
       zip_safe=False)
