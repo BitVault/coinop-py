@@ -9,6 +9,11 @@
   * Removed antiquated tests and installed tox config for testing and basic PassphraseBox tests
   * Python 3.3+ compatibility
 
+0.2.1 / 2015-06-17
+==================
+
+  * Backporting 0.3.0 py3 support and non-nacl passphrasebox
+
 0.2.0 / 2015-05-27
 ==================
 
